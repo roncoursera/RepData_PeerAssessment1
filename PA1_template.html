@@ -197,13 +197,8 @@ hr {
 <pre><code class="r">fzip = &quot;activity.csv&quot;
 stepdat &lt;- read.table(fzip, sep=&quot;,&quot;, stringsAsFactors=FALSE, as.is=TRUE, header=TRUE, na.strings=&quot;NA&quot;)
 stepdat$day &lt;- as.Date(stepdat$date, &quot;%Y-%m-%d&quot;)
-stepdat.no_na &lt;- data[!is.na(stepdat$steps),]
-</code></pre>
-
-<pre><code>## Error: object of type &#39;closure&#39; is not subsettable
-</code></pre>
-
-<pre><code class="r">steps.per.day=xtabs(steps ~ day, data=stepdat.no_na)
+stepdat.no_na &lt;- stepdat[!is.na(stepdat$steps),]
+steps.per.day=xtabs(steps ~ day, data=stepdat.no_na)
 </code></pre>
 
 <h2>What is mean total number of steps taken per day?</h2>

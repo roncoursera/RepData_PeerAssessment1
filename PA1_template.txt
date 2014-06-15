@@ -4,20 +4,8 @@
 
 
 ```r
-fzip = "repdata-data-activity/activity.csv"
+fzip = "activity.csv"
 stepdat <- read.table(fzip, sep=",", stringsAsFactors=FALSE, as.is=TRUE, header=TRUE, na.strings="NA")
-```
-
-```
-## Warning: cannot open file 'repdata-data-activity/activity.csv': No such
-## file or directory
-```
-
-```
-## Error: cannot open the connection
-```
-
-```r
 stepdat$day <- as.Date(stepdat$date, "%Y-%m-%d")
 stepdat.no_na <- data[!is.na(stepdat$steps),]
 ```
@@ -149,27 +137,12 @@ median(as.vector(steps.per.day.ex)) # [1] 11015 versus 10765 before extrapolatio
 library(ggplot2)
 stepdat.extrapolated$weekday <- weekdays(stepdat.extrapolated$day)
 weekday.list <- unique(stepdat.extrapolated$weekday)
-weekday.type <- c(rep("Weekday", 5), rep("Weekend", 2))
+weekday.type <- c(rep("Weekdays", 5), rep("Weekends", 2))
+stepdat.extrapolated$dayType <- day.type[match(stepdat.extrapolated$weekday, weekday.list)]
 
 stepdat.extrapolated$dayType <- factor(stepdat.extrapolated$dayType)
+interval.steps <- aggregate(steps ~ interval + dayType, data=stepdat.extrapolated, FUN=mean)
+ggplot(interval.steps, aes(interval, steps)) + geom_line() + xlab("Intervals") + ylab("Number of Steps") + facet_grid(dayType ~ .)
 ```
 
-```
-## Error: replacement has 0 rows, data has 17568
-```
-
-```r
-intervalsteps <- aggregate(steps ~ interval + dayType, data=stepdat.extrapolated, FUN=mean)
-```
-
-```
-## Error: object 'dayType' not found
-```
-
-```r
-ggplot(intervalsteps, aes(interval, steps)) + geom_line() + xlab("Interval") + ylab("Number of steps") + facet_grid(dayType ~ .)
-```
-
-```
-## Error: object 'intervalsteps' not found
-```
+![plot of chunk unnamed-chunk-10](figure/unnamed-chunk-10.png) 

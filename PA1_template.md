@@ -7,14 +7,7 @@
 fzip = "activity.csv"
 stepdat <- read.table(fzip, sep=",", stringsAsFactors=FALSE, as.is=TRUE, header=TRUE, na.strings="NA")
 stepdat$day <- as.Date(stepdat$date, "%Y-%m-%d")
-stepdat.no_na <- data[!is.na(stepdat$steps),]
-```
-
-```
-## Error: object of type 'closure' is not subsettable
-```
-
-```r
+stepdat.no_na <- stepdat[!is.na(stepdat$steps),]
 steps.per.day=xtabs(steps ~ day, data=stepdat.no_na)
 ```
 
