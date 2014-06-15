@@ -1,13 +1,20 @@
 # Reproducible Research: Peer Assessment 1
-initial commit
 
 ## Loading and preprocessing the data
 
+```{r}
+fzip = "repdata-data-activity/activity.csv"
+stepdat <- read.table(fzip, sep=",", stringsAsFactors=FALSE, as.is=TRUE, header=TRUE, na.strings="NA")
+stepdat$day <- as.Date(stepdat$date, "%Y-%m-%d")
+stepdat.no_na <- data[!is.na(stepdat$steps),]
+```
 
 
 ## What is mean total number of steps taken per day?
 
-
+```{r}
+hist(xtabs(steps ~ day, data=stepdat.no_na), breaks=11, xlab="steps per day", main="Distribution of Number of Steps Taken per Day")
+```
 
 ## What is the average daily activity pattern?
 
