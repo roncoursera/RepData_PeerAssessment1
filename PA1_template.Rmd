@@ -15,7 +15,7 @@ steps.per.day=xtabs(steps ~ day, data=stepdat.no_na)
 
 ### Make a histogram of the total number of steps taken each day
 ```{r}
-hist(steps.per.day, breaks=11, xlab="steps per day", main="Distribution of Number of Steps Taken per Day")
+h1 <- hist(steps.per.day, breaks=11, xlab="steps per day", main="Distribution of Number of Steps Taken per Day")
 ```
 
 ### Calculate and report the mean and median total number of steps taken per day
@@ -42,9 +42,48 @@ plot(steps.per.day.mean$interval, steps.per.day.mean$avg, type="l",
 steps.per.day.mean[steps.per.day.mean$avg==max(steps.per.day.mean$avg),1] # [1] 835
 ```
 
-
 ## Imputing missing values
 
+### Calculate and report the total number of missing values in the dataset (i.e. the total number of rows with NAs)
 
+```{r}
+sum(is.na(stepdat$steps)) # [1] 2304
+```
+
+### Devise a strategy for filling in all of the missing values in the dataset. Replace missing values by the average for that interval
+
+```{r}
+tmpdat <- merge(stepdat, steps.per.day.mean, by="interval")
+naidx = is.na(stepdat$steps)
+stepdat$steps.extrapolated <- stepdat$steps
+stepdat$steps.extrapolated[naidx] <- as.integer(tmpdat[naidx,"avg"])
+```
+
+### Create a new dataset that is equal to the original dataset but with the missing data filled in.
+
+```{r}
+stepdat.extrapolated <- stepdat[,c(5,2,3)]
+colnames(stepdat.extrapolated) = c("steps","date","interval")
+```
+
+### Make a histogram of the total number of steps taken each day and Calculate and report the mean and median total number of steps taken per day. Do these values differ from the estimates from the first part of the assignment? What is the impact of imputing missing data on the estimates of the total daily number of steps?
+
+```{r}
+stepdat.extrapolated$day <- as.Date(stepdat.extrapolated$date, "%Y-%m-%d")
+steps.per.day.ex=xtabs(steps ~ day, data=stepdat.extrapolated)
+h2 <- hist(steps.per.day.ex, breaks=11, xlab="steps per day (extrapolated)", main="Distribution of Number of Steps Taken per Day")
+mean(as.vector(steps.per.day.ex)) #  [1] 10871.98 versus 10766.19 before extrapolation
+median(as.vector(steps.per.day.ex)) # [1] 11015 versus 10765 before extrapolation
+```
 
 ## Are there differences in activity patterns between weekdays and weekends?
+```{r}
+library(ggplot2)
+stepdat.extrapolated$weekday <- weekdays(stepdat.extrapolated$day)
+weekday.list <- unique(stepdat.extrapolated$weekday)
+weekday.type <- c(rep("Weekday", 5), rep("Weekend", 2))
+
+stepdat.extrapolated$dayType <- factor(stepdat.extrapolated$dayType)
+intervalsteps <- aggregate(steps ~ interval + dayType, data=stepdat.extrapolated, FUN=mean)
+ggplot(intervalsteps, aes(interval, steps)) + geom_line() + xlab("Interval") + ylab("Number of steps") + facet_grid(dayType ~ .)
+```
